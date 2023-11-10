@@ -29,8 +29,9 @@
         }
 
         button {
-            width: 100%;
+            width: 48%; /* Ancho del botón */
             padding: 10px;
+            margin-right: 2%; /* Espaciado entre botones */
             background-color: #4caf50;
             color: white;
             border: none;
@@ -67,26 +68,18 @@
         <label for="invoiceDetails">Detalles de la Factura/Boleta:</label>
         <textarea id="invoiceDetails" name="invoiceDetails" required></textarea>
 
-        <button type="button" onclick="generateDocuments()">Generar Factura/Boleta, XML y PDF</button>
+        <button type="button" onclick="generateXML()">Generar XML</button>
+        <button type="button" onclick="generatePDF()">Generar PDF</button>
     </form>
 
     <script>
-        function generateDocuments() {
+        function generateXML() {
             // Obtener valores del formulario
             var customerName = document.getElementById('customerName').value;
             var productName = document.getElementById('productName').value;
             var quantity = document.getElementById('quantity').value;
             var price = document.getElementById('price').value;
             var invoiceDetails = document.getElementById('invoiceDetails').value;
-
-            // Construir factura/boleta
-            var invoiceContent = `
-                Cliente: ${customerName}
-                Producto: ${productName}
-                Cantidad: ${quantity}
-                Precio Unitario: ${price}
-                Detalles: ${invoiceDetails}
-            `;
 
             // Crear objeto XML
             var xmlData = document.implementation.createDocument(null, 'Invoice', null);
@@ -106,6 +99,24 @@
 
             // Descargar archivo XML
             downloadFile(xmlString, 'invoice.xml');
+        }
+
+        function generatePDF() {
+            // Obtener valores del formulario
+            var customerName = document.getElementById('customerName').value;
+            var productName = document.getElementById('productName').value;
+            var quantity = document.getElementById('quantity').value;
+            var price = document.getElementById('price').value;
+            var invoiceDetails = document.getElementById('invoiceDetails').value;
+
+            // Construir factura/boleta
+            var invoiceContent = `
+                Cliente: ${customerName}
+                Producto: ${productName}
+                Cantidad: ${quantity}
+                Precio Unitario: ${price}
+                Detalles: ${invoiceDetails}
+            `;
 
             // Crear un nuevo documento PDF
             var pdf = new jsPDF();
@@ -115,9 +126,6 @@
 
             // Guardar el PDF con un nombre específico
             pdf.save('factura_boleta.pdf');
-
-            // Alerta para indicar que la factura/boleta, XML y PDF han sido generados
-            alert('Factura/Boleta, XML y PDF generados. Puedes revisar los archivos descargados.');
         }
 
         function downloadFile(content, fileName) {
