@@ -29,9 +29,9 @@
         }
 
         button {
-            width: 48%; /* Ancho del botón */
+            width: 48%;
             padding: 10px;
-            margin-right: 2%; /* Espaciado entre botones */
+            margin-right: 2%;
             background-color: #4caf50;
             color: white;
             border: none;
@@ -120,10 +120,10 @@
 
             // Crear un nuevo documento PDF
             var pdf = new jsPDF();
-
+            
             // Añadir contenido al PDF
             pdf.text(invoiceContent, 10, 10);
-
+            
             // Guardar el PDF con un nombre específico
             pdf.save('factura_boleta.pdf');
         }
