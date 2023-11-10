@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emisor de Facturas y Boletas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -66,11 +67,11 @@
         <label for="invoiceDetails">Detalles de la Factura/Boleta:</label>
         <textarea id="invoiceDetails" name="invoiceDetails" required></textarea>
 
-        <button type="button" onclick="generateInvoice()">Generar Factura/Boleta</button>
+        <button type="button" onclick="generateDocuments()">Generar Factura/Boleta, XML y PDF</button>
     </form>
 
     <script>
-        function generateInvoice() {
+        function generateDocuments() {
             // Obtener valores del formulario
             var customerName = document.getElementById('customerName').value;
             var productName = document.getElementById('productName').value;
@@ -79,11 +80,54 @@
             var invoiceDetails = document.getElementById('invoiceDetails').value;
 
             // Construir factura/boleta
-            var invoice = `Cliente: ${customerName}\nProducto: ${productName}\nCantidad: ${quantity}\nPrecio Unitario: ${price}\nDetalles: ${invoiceDetails}`;
+            var invoiceContent = `
+                Cliente: ${customerName}
+                Producto: ${productName}
+                Cantidad: ${quantity}
+                Precio Unitario: ${price}
+                Detalles: ${invoiceDetails}
+            `;
 
-            // Mostrar factura/boleta en consola (puedes enviarla a un servidor o almacenarla según tus necesidades)
-            console.log(invoice);
-            alert('Factura/Boleta generada. Revisa la consola para ver los detalles.');
+            // Crear objeto XML
+            var xmlData = document.implementation.createDocument(null, 'Invoice', null);
+            var root = xmlData.documentElement;
+
+            var elements = ['CustomerName', 'ProductName', 'Quantity', 'Price', 'InvoiceDetails'];
+            var values = [customerName, productName, quantity, price, invoiceDetails];
+
+            for (var i = 0; i < elements.length; i++) {
+                var element = xmlData.createElement(elements[i]);
+                element.appendChild(xmlData.createTextNode(values[i]));
+                root.appendChild(element);
+            }
+
+            // Convertir el objeto XML a una cadena de texto
+            var xmlString = new XMLSerializer().serializeToString(xmlData);
+
+            // Descargar archivo XML
+            downloadFile(xmlString, 'invoice.xml');
+
+            // Crear un nuevo documento PDF
+            var pdf = new jsPDF();
+
+            // Añadir contenido al PDF
+            pdf.text(invoiceContent, 10, 10);
+
+            // Guardar el PDF con un nombre específico
+            pdf.save('factura_boleta.pdf');
+
+            // Alerta para indicar que la factura/boleta, XML y PDF han sido generados
+            alert('Factura/Boleta, XML y PDF generados. Puedes revisar los archivos descargados.');
+        }
+
+        function downloadFile(content, fileName) {
+            var blob = new Blob([content], { type: 'text/xml' });
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 
